@@ -42,6 +42,7 @@ def aes_128_decrypt_cbc(cipher, key, iv):
 if __name__ == "__main__":
 	data = a2b_base64(''.join(line.strip() for line in open("message10.txt")))
 	key = "YELLOW SUBMARINE"
+	#key = "\x42" * 24
 	iv = "\x00"*16
 	
 	print aes_128_decrypt_cbc(data,key,iv)
