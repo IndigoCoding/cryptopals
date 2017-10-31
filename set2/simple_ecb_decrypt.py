@@ -52,7 +52,6 @@ def counting(message, char):
 		else: break
 	return count	
 		
-#NEED TO BE FIX
 def detect_byte(message, blocksize, msglen, initvector):
 	charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n-=[];'./,\!@#$%^&*()_+{}|:\"<>? "
 	global plaintext
@@ -71,9 +70,7 @@ def detect_byte(message, blocksize, msglen, initvector):
 			
 if __name__ == "__main__":
 	secret = open("simple_ecb_decrypt.txt","r").read()
-	#random.seed(datetime.now())
 	message = "".join(line.strip() for line in secret)	
-	#message = "this".encode('base64')
 	blocksize = detect_block_size(message)
 	detect_mode(message, blocksize)
 	length = detect_message_length(message, blocksize)
