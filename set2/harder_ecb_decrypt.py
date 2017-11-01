@@ -9,11 +9,12 @@ def randomize():
 	return os.urandom(16)
 
 key = randomize()
+prefix = os.urandom(random.randint(1,256))
 plaintext = ""
 
 def encryption_oracle(message, mystring):
-	global key
-	message = mystring + message.decode('base64')
+	global key,prefix
+	message = prefix + mystring + message.decode('base64')
 	return aescbc.aes_128_encrypt_ecb(aescbc.pkcs7padding(message),key)
 
 def detect_block_size(message):
@@ -36,12 +37,35 @@ def detect_mode(message, blocksize):
 			return
 	print "CBC detected"
 
-def detect_message_length(message, blocksize):
+
+def detect_prefix_length(message, blocksize):
+	global prefix
+	print "prefix length:", len(prefix)
+	#time.sleep(1)
+	initvector = "1" * blocksize * 2
+	position = 1
+	found = 0
+	while True:
+		result = encryption_oracle(message, initvector)
+		chunks = list(map(''.join, zip(*[iter(result)] * blocksize)))
+		for i in range(len(chunks) - 1):
+			#print i
+			#print repr(chunks[i]), repr(chunks[i+1])
+			#time.sleep(0.1)
+			if chunks[i] == chunks[i+1]: 
+				position += i
+				found = 1
+				break
+		if found == 1: break
+		initvector += "1"
+	return (position + 1) * blocksize - len(initvector)
+	
+def detect_message_length(message, blocksize, prefixsize):
 	initlength = len(encryption_oracle(message, ""))
 	for i in range(1,blocksize+1):
 		if len(encryption_oracle(message,"1" * i)) != initlength:
-			print "Message length is " + str(initlength - i)
-			return initlength - i
+			print "Message length is " + str(initlength - i - prefixsize)
+			return initlength - i - prefixsize
 		
 
 def counting(message, char):
@@ -52,29 +76,31 @@ def counting(message, char):
 		else: break
 	return count	
 		
-def detect_byte(message, blocksize, msglen, initvector):
+def detect_byte(message, blocksize, prefixsize, msglen, initvector):
 	charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n-=[];'./,\!@#$%^&*()_+{}|:\"<>? "
 	global plaintext
 	container = int(math.ceil(float(msglen)/blocksize) * blocksize)
 	if initvector == "":
-		initvector = "a" * (container - 1) 
+		initvector = "a" * (container - 1 + prefixsize % blocksize) 
 	result = encryption_oracle(message, initvector)
 	for i in charset:
 		fullvector = initvector + plaintext + i
 		newresult = encryption_oracle(message, fullvector)
-		if result[:container] == newresult[:container]:
+		if result[:(container + prefixsize + prefixsize % blocksize)] == newresult[:(container + prefixsize + prefixsize % blocksize)]:
 			plaintext += i
 			if (container - counting(initvector,"a")) ==  msglen: return plaintext
-			detect_byte(message, blocksize, msglen, initvector[1:])
+			detect_byte(message, blocksize, prefixsize, msglen, initvector[1:])
 			return plaintext
 			
 if __name__ == "__main__":
 	secret = open("simple_ecb_decrypt.txt","r").read()
-	message = "".join(line.strip() for line in secret)	
-	blocksize = detect_block_size(message)
+	message = "".join(line.strip() for line in secret)
+	print len(message.decode('base64'))	
+	blocksize = 16
 	detect_mode(message, blocksize)
-	length = detect_message_length(message, blocksize)
-	print "Founded Message is: \n", detect_byte(message, blocksize, length,"")
+	prefixsize = detect_prefix_length(message, blocksize)
+	msglen = detect_message_length(message, blocksize, prefixsize)
+	print detect_byte(message, blocksize, prefixsize, msglen, "")
 
 	
 	
