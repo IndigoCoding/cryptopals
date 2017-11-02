@@ -79,15 +79,21 @@ def counting(message, char):
 def detect_byte(message, blocksize, prefixsize, msglen, initvector):
 	charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n-=[];'./,\!@#$%^&*()_+{}|:\"<>? "
 	global plaintext
-	container = int(math.ceil(float(msglen)/blocksize) * blocksize)
+	container = int(math.ceil(float(len(message.decode('base64')))/blocksize) * blocksize)
+	print container
 	if initvector == "":
 		initvector = "a" * (container - 1 + prefixsize % blocksize) 
+	print initvector
 	result = encryption_oracle(message, initvector)
 	for i in charset:
 		fullvector = initvector + plaintext + i
 		newresult = encryption_oracle(message, fullvector)
+		print repr(result)
+		print repr(newresult), "\n"
+		time.sleep(1)
 		if result[:(container + prefixsize + prefixsize % blocksize)] == newresult[:(container + prefixsize + prefixsize % blocksize)]:
 			plaintext += i
+			print i
 			if (container - counting(initvector,"a")) ==  msglen: return plaintext
 			detect_byte(message, blocksize, prefixsize, msglen, initvector[1:])
 			return plaintext
@@ -95,11 +101,14 @@ def detect_byte(message, blocksize, prefixsize, msglen, initvector):
 if __name__ == "__main__":
 	secret = open("simple_ecb_decrypt.txt","r").read()
 	message = "".join(line.strip() for line in secret)
-	print len(message.decode('base64'))	
+	#print len(message.decode('base64'))	
+	message = "abcdefgh".encode('base64')
 	blocksize = 16
 	detect_mode(message, blocksize)
 	prefixsize = detect_prefix_length(message, blocksize)
+	print "PREFIXSIZE: ",prefixsize
 	msglen = detect_message_length(message, blocksize, prefixsize)
+	print "MSGLEN: ", msglen
 	print detect_byte(message, blocksize, prefixsize, msglen, "")
 
 	
