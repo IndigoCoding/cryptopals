@@ -45,6 +45,9 @@ class MT19937:
             self.MT[i] = self.MT[(i + self.m) % self.n] ^ xA
         self.index = 0
 
+    def setState(self, state):
+        self.MT = state    
+
 if __name__ == '__main__':
     mt = MT19937(123)
     zzz = list()
