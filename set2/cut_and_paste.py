@@ -25,7 +25,7 @@ def encode(profile):
 
 def profile_for(email):
 	if "&" in email or "=" in email:
-		print "Invalid character in email"
+		print ("Invalid character in email")
 		return ""
 	uid = 10
 	profile = OrderedDict([("email",email) , ("uid",uid), ("role","user")])
@@ -58,9 +58,9 @@ if __name__ == "__main__":
 	
 	payload = get_block(blocks1, blocksize, 0) + get_block(blocks1, blocksize, 1) + get_block(blocks2, blocksize, 1) + get_block(blocks3, blocksize, 2)
 	
-	#print decrypt_profile(payload,key)
+	#print (decrypt_profile(payload,key))
 	if check_admin(decrypt_profile(payload,key)):
-		print "(+)Hack successfully. The obtained profile is ",decrypt_profile(payload,key)
+		print ("(+)Hack successfully. The obtained profile is ",decrypt_profile(payload,key))
 	else:
-		print "(+)Hack failed"
+		print ("(+)Hack failed")
 		

@@ -32,9 +32,9 @@ def checkadmin(cipher):
 	global key,iv
 	plain = aes_128_decrypt_cbc(cipher, key, iv)
 	for item in plain.split(';'):
-		print item
+		print(item)
 		subitem = item.split('=')
-		print subitem[0],subitem[1]
+		print(subitem[0],subitem[1])
 		if subitem[0] == 'admin' and subitem[1] == 'true':
 			return True
 	return False
@@ -53,4 +53,4 @@ def bitflipping():
 	
 	
 if __name__ == "__main__":
-	print checkadmin(bitflipping())
+	print(checkadmin(bitflipping()))

@@ -1,11 +1,11 @@
 def validation(message, blocksize = 16):
 	padbyte = ord(message[-1])
 	for i in range(len(message)-padbyte,len(message)):
-		print padbyte, ord(message[i])
+		print (padbyte, ord(message[i]))
 		if ord(message[i]) != padbyte:
 			raise Exception("Not a valid padded string")
 			return
-	print "This is a valid PKCS7 padded string"
+	print ("This is a valid PKCS7 padded string")
 
 if __name__ == "__main__":
 	message1 = "ICE ICE BABY\x04\x04\x04\x04"

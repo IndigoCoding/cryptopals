@@ -12,10 +12,10 @@ def encryption_oracle(message):
 	#print len(message)
 	#print len(aescbc.pkcs7padding(message))
 	if random.randint(1,2) == 1:
-		print "Encrypt using ECB"
+		print ("Encrypt using ECB")
 		return aescbc.aes_128_encrypt_ecb(aescbc.pkcs7padding(message),randomize())
 	else:
-		print "Encrypt using CBC"
+		print ("Encrypt using CBC")
 		return aescbc.aes_128_encrypt_cbc(message,randomize(),randomize())
 
 def detect_mode():
@@ -24,9 +24,9 @@ def detect_mode():
 	chunks = list(map(''.join, zip(*[iter(result)]*16)))
 	for chunk in chunks:
 		if chunks.count(chunk) >= 3:
-			print "ECB detected"
+			print ("ECB detected")
 			return
-	print "CBC detected"
+	print ("CBC detected")
 	
 
 if __name__ == "__main__":

@@ -45,5 +45,5 @@ if __name__ == "__main__":
 	#key = "\x42" * 24
 	iv = "\x00"*16
 	
-	print aes_128_decrypt_cbc(data,key,iv)
+	print(aes_128_decrypt_cbc(data,key,iv))
 

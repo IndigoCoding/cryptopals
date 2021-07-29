@@ -22,7 +22,7 @@ def detect_block_size(message):
 		result = encryption_oracle(message, initvector)
 		chunks = list(map(''.join, zip(*[iter(result)]*blocksize)))
 		if chunks[0] == chunks[1]:
-			print "Block size is " + str(blocksize)
+			print ("Block size is " + str(blocksize))
 			return blocksize
 
 	
@@ -32,15 +32,15 @@ def detect_mode(message, blocksize):
 	chunks = list(map(''.join, zip(*[iter(result)] * blocksize)))
 	for chunk in chunks:
 		if chunks.count(chunk) >= 3:
-			print "ECB detected"
+			print ("ECB detected")
 			return
-	print "CBC detected"
+	print ("CBC detected")
 
 def detect_message_length(message, blocksize):
 	initlength = len(encryption_oracle(message, ""))
 	for i in range(1,blocksize+1):
 		if len(encryption_oracle(message,"1" * i)) != initlength:
-			print "Message length is " + str(initlength - i)
+			print ("Message length is " + str(initlength - i))
 			return initlength - i
 		
 
@@ -74,7 +74,7 @@ if __name__ == "__main__":
 	blocksize = detect_block_size(message)
 	detect_mode(message, blocksize)
 	length = detect_message_length(message, blocksize)
-	print "Founded Message is: \n", detect_byte(message, blocksize, length,"")
+	print ("Founded Message is: \n", detect_byte(message, blocksize, length,""))
 
 	
 	

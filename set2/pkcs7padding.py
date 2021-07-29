@@ -3,4 +3,4 @@ def padding(string, wantedbyte):
 	return string + chr(padvalue)*padvalue
 
 if __name__ == "__main__":
-	print repr(padding("YELLOW SUBMARINE",20))
+	print(repr(padding("YELLOW SUBMARINE",20)))
