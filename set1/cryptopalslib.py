@@ -1,5 +1,7 @@
 import codecs
 from base64 import b64encode, b64decode
+from Crypto.Util.Padding import pad, unpad
+from Crypto.Cipher import AES
 
 asciiTextChars = list(range(97, 122)) + [32]
 
@@ -70,6 +72,20 @@ def breakRepeatedXor(ciphertext):
         if isLetterString(plaintext.decode('ISO-8859-1')):
             return plaintext.decode('ISO-8859-1')
 
+def aesEcbDecrypt(ciphertext, key, encoding='utf-8'):
+    cipher = AES.new(key.encode(), AES.MODE_ECB)
+    return unpad(cipher.decrypt(ciphertext.encode(encoding)), AES.block_size).decode()
+
+def detectEcb(ciphertext, blocksize=AES.block_size):
+    cipherBlocks = {}
+    for i in range(0, len(ciphertext), blocksize):
+        currentBlock = ciphertext[i:i + blocksize]
+        if not cipherBlocks.get(currentBlock):
+            cipherBlocks[currentBlock] = 1
+        else:
+            return True
+    return False    
+
 if __name__ == '__main__':
     # print(hex2b64("49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d"))
     # print(xor2hex("1c0111001f010100061a024b53535009181c","686974207468652062756c6c277320657965"))
@@ -82,6 +98,16 @@ if __name__ == '__main__':
     # print(currentCandidate)     
     # print(codecs.encode(repeatedXor("Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal", "ICE"), 'hex'))
     # print(hammingDistance('this is a test', 'wokka wokka!!!'))
-    ciphertext = b64decode(open('repeatbytexor.txt','r').read()).decode()
-    print(breakRepeatedXor(ciphertext))
+    # ciphertext = b64decode(open('repeatbytexor.txt','r').read()).decode()
+    # print(breakRepeatedXor(ciphertext))
+
+    # key = "YELLOW SUBMARINE"
+    # message = ""
+    # for line in open('aesecb.txt', 'r'):
+    #     message += line.strip()
+    # print(aesEcbDecrypt(b64decode(message).decode('ISO-8859-1'), key, 'ISO-8859-1'))
+
+    for line in open('detectecb.txt', 'r'):
+        if detectEcb(line.strip()):
+            print(line)
     pass
